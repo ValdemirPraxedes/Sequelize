@@ -1,64 +1,70 @@
+const RecursoNaoEncontradoErro = require("../erros/RecursoNaoEncontradoErro");
+const RequisicaoIncorretaErro = require("../erros/RequisicaoIncorretaErro");
+
 class Controller {
     constructor(entidadeService) {
         this.entidadeService = entidadeService;
     }
 
-    async pegaTodos(req, res) {
+    async pegaTodos(req, res, next) {
         try {
             const listaDeRegistros = await this.entidadeService.pegaTodosOsRegistros();
             return res.status(200).json(listaDeRegistros);
         } catch (erro) {
-            // erro
+            next(erro);
         }
     }
 
-    async pegaUmPorId(req, res) {
+    async pegaUmPorId(req, res, next) {
         const { id } = req.params;
         try {
             const umRegistro = await this.entidadeService.pegaUmRegistroPorId(Number(id));
-            return res.status(200).json(umRegistro);
+            
+            if(umRegistro !== null) 
+                return res.status(200).json(umRegistro);
+            next(new RecursoNaoEncontradoErro());
         } catch (erro) {
-            // erro
+            next(erro);
         }
     }
 
 
-    async criaNovo(req, res) {
+    async criaNovo(req, res, next) {
         const dadosParaCriacao = req.body;
         try {
             const novoRegistroCriado = await this.entidadeService.criaRegistro(dadosParaCriacao);
             return res.status(200).json(novoRegistroCriado);
         } catch (erro) {
-            // erro
+            next(erro);
         }
     }
 
 
 
-    async atualiza(req, res) {
+    async atualiza(req, res, next) {
         const { id } = req.params;
         const dadosAtualizados = req.body;
         try {
             const foiAtualizado = await this.entidadeService.atualizaRegistro(dadosAtualizados, Number(id));
 
             if (!foiAtualizado) {
-                return res.status(400).json({ mensagem: `registro não atualizado` });
+                next(new RequisicaoIncorretaErro("registro não atualizado"));
             }
 
             return res.status(200).json({ mensagem: `registro atualizado` });
 
         } catch (error) {
-            // erro
+            next(erro);
         }
     }
 
-    async exclui(req, res) {
+    async exclui(req, res, next) {
         const { id } = req.params;
         try {
             await this.entidadeService.excluiRegistro(Number(id));
             return res.status(200).json({ mensagem: `id ${id} deletado` });
         } catch (error) {
-            // erro
+            next(erro);
         }
     }
 }
