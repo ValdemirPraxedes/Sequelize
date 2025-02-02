@@ -7,6 +7,7 @@ const matriculaController = new MatriculaController();
 
 const router = Router();
 
+router.get('/busca/pessoas', (req, res, next) => pessoaController.pesquisaPorQuery(req, res,next));
 router.get('/pessoas', (req, res, next) => pessoaController.pegaTodos(req, res,next));
 router.get('/pessoas/:id', (req, res, next) => pessoaController.pegaUmPorId(req, res,next));
 router.post('/pessoas', (req, res, next) => pessoaController.criaNovo(req, res,next));

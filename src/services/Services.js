@@ -4,22 +4,23 @@ const dataSource = require('../models');
 class Services {
     constructor(nomeDoModel) {
         this.model = nomeDoModel;
+        this.dataSource = dataSource;
     }
 
     async pegaTodosOsRegistros() {
-        return dataSource[this.model].findAll();
+        return this.dataSource[this.model].findAll();
     }
 
     async pegaUmRegistroPorId(id) {
-        return dataSource[this.model].findByPk(id);
+        return this.dataSource[this.model].findByPk(id);
       }
 
       async criaRegistro(dadosDoRegistro) {
-        return dataSource[this.model].create(dadosDoRegistro);
+        return this.dataSource[this.model].create(dadosDoRegistro);
       }
 
     async atualizaRegistro(dadosAtualizados, id) {
-        const listaDeRegistrosAtualizados = dataSource[this.model].update(dadosAtualizados, { where:{id}});
+        const listaDeRegistrosAtualizados = this.dataSource[this.model].update(dadosAtualizados, { where:{id}});
 
         if(listaDeRegistrosAtualizados[0] == 0) {
             return false;
@@ -28,8 +29,16 @@ class Services {
         return true;
     }
 
+    async pesquisaPorQuery(query) {
+        return dataSource[this.model].findAll({
+                    where: {
+                       ...query
+                    }
+                });
+    }
+
     async excluiRegistro(id) {
-        return dataSource[this.model].destroy({ where: { id: id } });
+        return this.dataSource[this.model].destroy({ where: { id: id } });
       }
 }
 

@@ -21,6 +21,17 @@ class PessoaController  extends Controller {
             next(erro);    
         }
     }
+
+    async pesquisaPorQuery(req, res, next) {
+        try {
+            const {nome,email, cpf} = req.query;
+            const pessoas = await pessoaServices.pesquisaPorQuery(nome, email, cpf);
+            req.resultado = pessoas;
+            next();
+        } catch (erro) {
+            next(erro);
+        }
+    }
 }
 
 module.exports = PessoaController;
