@@ -1,4 +1,4 @@
-const database = require('../models/index.js');
+const database = require('../database/models/index.js');
 const CategoriaServices = require('../services/CategoriaServices.js');
 const Controller = require('./Controller.js');
 

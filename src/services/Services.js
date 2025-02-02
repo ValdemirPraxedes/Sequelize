@@ -1,31 +1,30 @@
-const dataSource = require('../models');
+const dataSource = require('../database/models');
 
 
 class Services {
     constructor(nomeDoModel) {
         this.model = nomeDoModel;
-        this.dataSource = dataSource;
+       
     }
 
     async pegaTodosOsRegistros(limite, pagina, campoOrdenacao, ordem) {
-        try {
-            return this.dataSource[this.model].findAll({
-                limit: limite,
-                offset: pagina,
-                order: [[campoOrdenacao, ordem]]
-            });
-        }
-        catch (erro) {
-            console.log(erro);
-        }
+        return this.dataSource[this.model].findAll({
+            limit: limite,
+            offset: (pagina*limite),
+            order: [[campoOrdenacao, ordem]]
+        });
+    }
+
+    async pegaTodosOsRegistrosPorEscopo(escopo) {
+        return dataSource[this.model].scope(escopo).findAll;
     }
 
     async pegaUmRegistroPorId(id) {
-        return this.dataSource[this.model].findByPk(id);
+        return dataSource[this.model].findByPk(id);
     }
 
     async criaRegistro(dadosDoRegistro) {
-        return this.dataSource[this.model].create(dadosDoRegistro);
+        return dataSource[this.model].create(dadosDoRegistro);
     }
 
     async atualizaRegistro(dadosAtualizados, id) {
@@ -50,7 +49,7 @@ class Services {
     }
 
     async excluiRegistro(id) {
-        return this.dataSource[this.model].destroy({ where: { id: id } });
+        return dataSource[this.model].destroy({ where: { id: id } });
     }
 }
 

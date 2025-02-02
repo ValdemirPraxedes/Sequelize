@@ -12,7 +12,9 @@ class Controller {
         let [campoOrdenacao, ordem] = ordenacao.split(":");
     
         limite = parseInt(limite);
-        pagina = parseInt(pagina);
+        pagina = (parseInt(pagina)-1);
+
+        if(pagina < 0) pagina = 0;
 
         return {limite, pagina, campoOrdenacao, ordem};
     }
