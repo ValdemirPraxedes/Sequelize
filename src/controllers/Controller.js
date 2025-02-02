@@ -1,5 +1,7 @@
+const { where } = require("sequelize");
 const RecursoNaoEncontradoErro = require("../erros/RecursoNaoEncontradoErro");
 const RequisicaoIncorretaErro = require("../erros/RequisicaoIncorretaErro");
+const convertIds = require('../utils/conversonDeStringHelper.js');
 
 class Controller {
     constructor(entidadeService) {
@@ -19,6 +21,19 @@ class Controller {
         return {limite, pagina, campoOrdenacao, ordem};
     }
 
+    async pegaUmPorId(req, res, next) {
+        const { id } = req.params;
+        try {
+            const umRegistro = await this.entidadeService.pegaUmRegistroPorId(Number(id));
+            
+            if(umRegistro !== null) 
+                return res.status(200).json(umRegistro);
+            next(new RecursoNaoEncontradoErro());
+        } catch (erro) {
+            next(erro);
+        }
+    }
+
     async pegaTodos(req, res, next) {
         try {
 
@@ -31,10 +46,11 @@ class Controller {
         }
     }
 
-    async pegaUmPorId(req, res, next) {
-        const { id } = req.params;
+    async pegaUm(req, res, next) {
+        const { ...params } = req.params;
+        const where = convertIds(params);
         try {
-            const umRegistro = await this.entidadeService.pegaUmRegistroPorId(Number(id));
+            const umRegistro = await this.entidadeService.pegaUmRegistro(where);
             
             if(umRegistro !== null) 
                 return res.status(200).json(umRegistro);
@@ -58,10 +74,11 @@ class Controller {
 
 
     async atualiza(req, res, next) {
-        const { id } = req.params;
+        const { ...params } = req.params;
+        const where = convertIds(params);
         const dadosAtualizados = req.body;
         try {
-            const foiAtualizado = await this.entidadeService.atualizaRegistro(dadosAtualizados, Number(id));
+            const foiAtualizado = await this.entidadeService.atualizaRegistro(dadosAtualizados, where);
 
             if (!foiAtualizado) {
                 next(new RequisicaoIncorretaErro("registro não atualizado"));
@@ -69,7 +86,7 @@ class Controller {
 
             return res.status(200).json({ mensagem: `registro atualizado` });
 
-        } catch (error) {
+        } catch (erro) {
             next(erro);
         }
     }

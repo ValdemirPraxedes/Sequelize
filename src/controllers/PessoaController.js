@@ -11,10 +11,21 @@ class PessoaController  extends Controller {
         super(pessoaServices);
     }
 
-    async pegaMatriculas(req, res, next) {
-        const { estudanteId } = req.params;
+    async pegaMatriculasAtivas(req, res, next) {
+        const { estudante_id } = req.params;
         try {
-            const listaMatriculas = await pessoaServices.pegaMatriculasPorEstudante(Number(estudanteId));
+            const listaMatriculas = await pessoaServices.pegaMatriculasAtivasPorEstudante(Number(estudante_id));
+
+            return res.status(200).json(listaMatriculas);
+        } catch(erro) {
+            next(erro);    
+        }
+    }
+
+    async pegaMatriculasTodasAsMatriculas(req, res, next) {
+        const { estudante_id } = req.params;
+        try {
+            const listaMatriculas = await pessoaServices.pegaTodasAsMatriculasPorEstudante(Number(estudante_id));
 
             return res.status(200).json(listaMatriculas);
         } catch(erro) {
@@ -29,6 +40,17 @@ class PessoaController  extends Controller {
             const pessoas = await pessoaServices.pesquisaPorQuery(nome, email, cpf, limite, pagina, campoOrdenacao, ordem);
             return res.status(200).json(pessoas);
         } catch (erro) {
+            next(erro);
+        }
+    }
+
+    async cancelaRegistroEstudante(req, res, next) {
+        const { estudante_id } = req.params;
+        try {
+            await pessoaServices.cancelaPessoaEMatriculas(Number(estudante_id));
+
+            return res.status(200).json({mensagem:`Matriculas de ref. estudante ${estudante_id} canceladas`});
+        } catch(erro) {
             next(erro);
         }
     }
