@@ -5,13 +5,25 @@ class Controller {
     constructor(entidadeService) {
         this.entidadeService = entidadeService;
     }
+    
+    async  tratarQueryOrdenacaoPaginada(req) {
+        let { limite = 5, pagina = 1, ordenacao = "id:ASC" } = req.query;
+
+        let [campoOrdenacao, ordem] = ordenacao.split(":");
+    
+        limite = parseInt(limite);
+        pagina = parseInt(pagina);
+
+        return {limite, pagina, campoOrdenacao, ordem};
+    }
 
     async pegaTodos(req, res, next) {
         try {
-            const listaDeRegistros = await this.entidadeService.pegaTodosOsRegistros();
 
-            req.resultado = listaDeRegistros;
-            next();
+            const {limite, pagina, campoOrdenacao, ordem} = await this.tratarQueryOrdenacaoPaginada(req);
+            const listaDeRegistros = await this.entidadeService.pegaTodosOsRegistros(limite, pagina, campoOrdenacao, ordem);
+            return res.status(200).json(listaDeRegistros);
+ 
         } catch (erro) {
             next(erro);
         }

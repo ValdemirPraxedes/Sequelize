@@ -24,10 +24,10 @@ class PessoaController  extends Controller {
 
     async pesquisaPorQuery(req, res, next) {
         try {
+            const {limite, pagina, campoOrdenacao, ordem} = await this.tratarQueryOrdenacaoPaginada(req);
             const {nome,email, cpf} = req.query;
-            const pessoas = await pessoaServices.pesquisaPorQuery(nome, email, cpf);
-            req.resultado = pessoas;
-            next();
+            const pessoas = await pessoaServices.pesquisaPorQuery(nome, email, cpf, limite, pagina, campoOrdenacao, ordem);
+            return res.status(200).json(pessoas);
         } catch (erro) {
             next(erro);
         }

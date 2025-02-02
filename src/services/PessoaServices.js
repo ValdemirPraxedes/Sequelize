@@ -13,14 +13,14 @@ class PessoaServices extends Services {
         return listaMatriculas;
     }
 
-    async pesquisaPorQuery(nome, email, cpf) {
+    async pesquisaPorQuery(nome, email, cpf, limite, pagina, campoOrdenacao, ordem) {
         const query = {};
 
         if(nome) query.nome = {[Op.like]: `%${nome}%`};
         if(email) query.email = {[Op.like]: `%${email}%`};
         if(cpf) query.cpf = { [Op.like]: `%${cpf}%`};
 
-        return super.pesquisaPorQuery(query);
+        return super.pesquisaPorQuery(query, limite, pagina, campoOrdenacao, ordem);
     }
 }
 
